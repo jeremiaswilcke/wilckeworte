@@ -1,8 +1,13 @@
+'use client'
+
+import { useState } from 'react'
 import { ContactForm } from '../ContactForm'
+import { BookingModal } from '../BookingModal'
 import { siteContent } from '@/lib/seed-data'
 
 export function FinalCTASection() {
   const { cta, contact } = siteContent
+  const [projektOpen, setProjektOpen] = useState(false)
 
   return (
     <section id="kontakt" className="px-6 py-24 md:py-32" style={{ background: 'var(--bg)' }}>
@@ -34,23 +39,36 @@ export function FinalCTASection() {
               {cta.subline}
             </p>
 
+            {/* Projekt anfragen Button */}
+            <button
+              onClick={() => setProjektOpen(true)}
+              className="mt-6 w-fit cursor-pointer rounded-full px-6 py-3 text-sm font-bold uppercase text-white transition-colors"
+              style={{
+                fontFamily: 'var(--font-display)',
+                background: 'var(--coral)',
+                letterSpacing: '0.05em',
+              }}
+            >
+              Projekt anfragen
+            </button>
+
             <div className="mt-10 flex flex-col gap-3">
               <a
                 href={`tel:${contact.telefon.replace(/\s/g, '')}`}
                 className="transition-colors hover:text-[var(--coral)]"
                 style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)', color: 'var(--text)' }}
               >
-                📞 {contact.telefon}
+                {contact.telefon}
               </a>
               <a
                 href={`mailto:${contact.email}`}
                 className="transition-colors hover:text-[var(--coral)]"
                 style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)', color: 'var(--text)' }}
               >
-                ✉️ {contact.email}
+                {contact.email}
               </a>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)', color: 'var(--text)' }}>
-                📍 {contact.adresse}
+                {contact.adresse}
               </p>
             </div>
           </div>
@@ -61,6 +79,13 @@ export function FinalCTASection() {
           </div>
         </div>
       </div>
+
+      {/* Projekt-Anfrage Modal */}
+      <BookingModal
+        open={projektOpen}
+        onClose={() => setProjektOpen(false)}
+        type="projekt"
+      />
     </section>
   )
 }

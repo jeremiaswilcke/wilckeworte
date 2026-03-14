@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { siteContent, type Paket } from '@/lib/seed-data'
+import { BookingModal } from '../BookingModal'
 
 type Kategorie = 'selbstproduktion' | 'voller_service'
 
-function PaketCard({ paket }: { paket: Paket }) {
+function PaketCard({ paket, kategorie, onBook }: { paket: Paket; kategorie: Kategorie; onBook: () => void }) {
   const isEmpfohlen = paket.empfohlen
 
   return (
@@ -45,6 +46,9 @@ function PaketCard({ paket }: { paket: Paket }) {
           /{paket.einheit === 'monatlich' ? 'Monat' : 'einmalig'}
         </span>
       </div>
+      <p className="mt-2" style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--teal)' }}>
+        Bezahlung auf Rechnung
+      </p>
       <ul className="mt-6 flex flex-1 flex-col gap-3">
         {paket.features.map((feature) => (
           <li
@@ -57,9 +61,9 @@ function PaketCard({ paket }: { paket: Paket }) {
           </li>
         ))}
       </ul>
-      <a
-        href="#kontakt"
-        className="mt-8 block rounded-full py-3 text-center text-sm font-bold uppercase transition-colors"
+      <button
+        onClick={onBook}
+        className="mt-8 block w-full cursor-pointer rounded-full py-3 text-center text-sm font-bold uppercase transition-colors"
         style={{
           fontFamily: 'var(--font-display)',
           background: isEmpfohlen ? 'var(--coral)' : 'transparent',
@@ -68,8 +72,8 @@ function PaketCard({ paket }: { paket: Paket }) {
           letterSpacing: '0.05em',
         }}
       >
-        Auswählen
-      </a>
+        Jetzt buchen
+      </button>
     </div>
   )
 }
@@ -77,6 +81,7 @@ function PaketCard({ paket }: { paket: Paket }) {
 export function PricingSection() {
   const [step, setStep] = useState<1 | 2>(1)
   const [kategorie, setKategorie] = useState<Kategorie | null>(null)
+  const [selectedPaket, setSelectedPaket] = useState<{ paket: Paket; kategorie: Kategorie } | null>(null)
 
   const pakete = kategorie ? siteContent.pakete[kategorie] : []
 
@@ -139,7 +144,7 @@ export function PricingSection() {
             </motion.div>
           )}
 
-          {step === 2 && (
+          {step === 2 && kategorie && (
             <motion.div
               key="step2"
               initial={{ opacity: 0, x: -20 }}
@@ -156,13 +161,34 @@ export function PricingSection() {
               </button>
               <div className="grid gap-6 md:grid-cols-3">
                 {pakete.map((paket) => (
-                  <PaketCard key={paket.id} paket={paket as unknown as Paket} />
+                  <PaketCard
+                    key={paket.id}
+                    paket={paket as unknown as Paket}
+                    kategorie={kategorie}
+                    onBook={() => setSelectedPaket({ paket: paket as unknown as Paket, kategorie })}
+                  />
                 ))}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Booking Modal */}
+      {selectedPaket && (
+        <BookingModal
+          open={!!selectedPaket}
+          onClose={() => setSelectedPaket(null)}
+          type="paket"
+          paket={{
+            paket_id: selectedPaket.paket.id,
+            paket_name: selectedPaket.paket.name,
+            kategorie: selectedPaket.kategorie,
+            preis: selectedPaket.paket.preis,
+            einheit: selectedPaket.paket.einheit,
+          }}
+        />
+      )}
     </section>
   )
 }
