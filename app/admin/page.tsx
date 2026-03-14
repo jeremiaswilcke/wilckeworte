@@ -158,13 +158,22 @@ export default function AdminPage() {
               Wilcke Worte und Visionen — Admin
             </p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="rounded-full px-4 py-2 text-sm transition-colors hover:bg-white/10"
-            style={{ fontFamily: 'var(--font-body)', color: '#999', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            Logout
-          </button>
+          <div className="flex gap-3">
+            <a
+              href="/admin/equipment"
+              className="rounded-full px-4 py-2 text-sm transition-colors hover:bg-white/10"
+              style={{ fontFamily: 'var(--font-body)', color: '#6eb8be', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              Equipment verwalten
+            </a>
+            <button
+              onClick={handleLogout}
+              className="rounded-full px-4 py-2 text-sm transition-colors hover:bg-white/10"
+              style={{ fontFamily: 'var(--font-body)', color: '#999', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Stats */}

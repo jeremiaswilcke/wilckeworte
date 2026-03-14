@@ -98,6 +98,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -107,6 +108,19 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.7;
+  font-variant-ligatures: common-ligatures;
+}
+
+/* Improve Courier New rendering on Windows */
+@supports (-moz-appearance: none) {
+  body { text-rendering: optimizeSpeed; }
+}
+
+/* Ensure crisp monospace rendering */
+code, pre, .font-body,
+input, textarea, select, button {
+  -webkit-font-smoothing: auto;
+  font-variant-numeric: tabular-nums;
 }
 
 h1, h2, h3, h4, h5, h6 {

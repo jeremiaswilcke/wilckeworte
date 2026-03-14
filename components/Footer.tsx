@@ -30,9 +30,9 @@ export function Footer() {
           <Image
             src="/images/Logo_wilcke.png"
             alt="Wilcke Worte und Visionen"
-            width={84}
+            width={76}
             height={28}
-            style={{ height: '28px', width: 'auto' }}
+            style={{ height: '28px', width: 'auto', objectFit: 'contain' }}
           />
           <p
             className="max-w-xs"
