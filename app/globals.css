@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* TODO: Gigalypse.woff2 muss in public/fonts/ liegen. Bis dahin greift der Fallback. */
+@font-face {
+  font-family: 'Gigalypse';
+  src: url('/fonts/Gigalypse.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+:root {
+  /* Brand Colors */
+  --coral: #f97d73;
+  --coral-hover: #e8685e;
+  --coral-soft: rgba(249, 125, 115, 0.10);
+  --coral-glow: rgba(249, 125, 115, 0.25);
+  --teal: #56a0a6;
+  --teal-soft: rgba(86, 160, 166, 0.10);
+  --teal-glow: rgba(86, 160, 166, 0.20);
+  --anthrazit: #3f3f3f;
+
+  /* Light Theme */
+  --bg: #faf9f7;
+  --bg-alt: #f2f1ed;
+  --card: #ffffff;
+  --text: #2a2a2a;
+  --text-muted: #6b6b6b;
+  --text-faint: #8a8a8a;
+  --border: rgba(0, 0, 0, 0.09);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --nav-bg: rgba(250, 249, 247, 0.82);
+  --shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+
+  /* Fonts */
+  --font-display: 'Gigalypse', 'Impact', 'Arial Black', sans-serif;
+  --font-body: 'Courier New', 'Courier', monospace;
+
+  /* Fluid Typography */
+  --text-hero: clamp(2.5rem, 2rem + 4vw, 5.5rem);
+  --text-2xl: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-base: clamp(0.9rem, 0.85rem + 0.3vw, 1.05rem);
+  --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.9rem);
+}
+
+[data-theme="dark"] {
+  --coral: #fb9087;
+  --coral-hover: #fca49c;
+  --coral-soft: rgba(251, 144, 135, 0.10);
+  --coral-glow: rgba(251, 144, 135, 0.20);
+  --teal: #6eb8be;
+  --teal-soft: rgba(110, 184, 190, 0.10);
+  --teal-glow: rgba(110, 184, 190, 0.15);
+  --anthrazit: #8a8a8a;
+
+  --bg: #0c0c0c;
+  --bg-alt: #141414;
+  --card: #1a1a1a;
+  --text: #ececec;
+  --text-muted: #999999;
+  --text-faint: #6e6e6e;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --nav-bg: rgba(12, 12, 12, 0.82);
+  --shadow: 0 8px 40px rgba(0, 0, 0, 0.40);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-card: var(--card);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+  --color-coral: var(--coral);
+  --color-coral-hover: var(--coral-hover);
+  --color-coral-soft: var(--coral-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-nav-bg: var(--nav-bg);
+}
+
+::selection {
+  background: var(--coral-glow);
+  color: var(--text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
