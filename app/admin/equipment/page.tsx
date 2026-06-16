@@ -15,11 +15,20 @@ interface EquipmentItem {
 
 const CATEGORIES = ['Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik', 'Sonstiges']
 
+interface Block {
+  id: number
+  equipment_id: number
+  von: string
+  bis: string
+  grund: string | null
+}
+
 export default function EquipmentAdminPage() {
   const [authed, setAuthed] = useState(false)
   const [items, setItems] = useState<EquipmentItem[]>([])
   const [editingId, setEditingId] = useState<number | null>(null)
   const [showNew, setShowNew] = useState(false)
+  const [blocksFor, setBlocksFor] = useState<number | null>(null)
 
   const loadItems = useCallback(async () => {
     const res = await fetch('/api/admin/equipment')
@@ -158,7 +167,14 @@ export default function EquipmentAdminPage() {
                       {item.active ? 'Deaktivieren' : 'Aktivieren'}
                     </button>
                     <button
-                      onClick={() => { setEditingId(item.id); setShowNew(false) }}
+                      onClick={() => { setBlocksFor(blocksFor === item.id ? null : item.id); setEditingId(null) }}
+                      className="rounded-full px-3 py-1 text-xs"
+                      style={{ fontFamily: 'var(--font-body)', border: '1px solid rgba(255,255,255,0.15)', color: blocksFor === item.id ? '#6eb8be' : '#999' }}
+                    >
+                      Sperrzeiten
+                    </button>
+                    <button
+                      onClick={() => { setEditingId(item.id); setShowNew(false); setBlocksFor(null) }}
                       className="rounded-full px-3 py-1 text-xs"
                       style={{ fontFamily: 'var(--font-body)', border: '1px solid rgba(255,255,255,0.15)', color: '#999' }}
                     >
@@ -173,6 +189,9 @@ export default function EquipmentAdminPage() {
                     </button>
                   </div>
                 </div>
+              )}
+              {blocksFor === item.id && editingId !== item.id && (
+                <BlocksManager equipmentId={item.id} />
               )}
             </div>
           ))}
@@ -316,6 +335,107 @@ function EquipmentForm({
           style={{ fontFamily: 'var(--font-body)', border: '1px solid rgba(255,255,255,0.15)', color: '#999' }}
         >
           Abbrechen
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function BlocksManager({ equipmentId }: { equipmentId: number }) {
+  const [blocks, setBlocks] = useState<Block[]>([])
+  const [von, setVon] = useState('')
+  const [bis, setBis] = useState('')
+  const [grund, setGrund] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(async () => {
+    const res = await fetch(`/api/admin/equipment/blocks?equipment_id=${equipmentId}`)
+    if (res.ok) {
+      const data = await res.json()
+      setBlocks(data.blocks)
+    }
+    setLoading(false)
+  }, [equipmentId])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load()
+  }, [load])
+
+  async function addBlock() {
+    if (!von || !bis) return
+    await fetch('/api/admin/equipment/blocks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ equipment_id: equipmentId, von, bis, grund }),
+    })
+    setVon(''); setBis(''); setGrund('')
+    load()
+  }
+
+  async function removeBlock(id: number) {
+    await fetch(`/api/admin/equipment/blocks/${id}`, { method: 'DELETE' })
+    load()
+  }
+
+  const inputStyle = {
+    fontFamily: 'var(--font-body)',
+    fontSize: 'var(--text-sm)',
+    background: '#141414',
+    border: '1px solid rgba(255,255,255,0.08)',
+    color: '#ececec',
+  } as const
+
+  return (
+    <div className="border-t px-6 py-4" style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#141414' }}>
+      <p className="mb-3 text-xs uppercase tracking-[0.15em]" style={{ fontFamily: 'var(--font-body)', color: '#888' }}>
+        Gesperrte Zeiträume
+      </p>
+
+      {loading ? (
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: '#666' }}>Lädt…</p>
+      ) : blocks.length === 0 ? (
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: '#666' }}>
+          Keine Sperrzeiten — Gerät ist durchgehend buchbar.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {blocks.map((b) => (
+            <li key={b.id} className="flex items-center gap-3" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: '#ececec' }}>
+              <span>{b.von} – {b.bis}</span>
+              {b.grund && <span style={{ color: '#888' }}>({b.grund})</span>}
+              <button
+                onClick={() => removeBlock(b.id)}
+                className="rounded-full px-2 py-0.5 text-xs"
+                style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#e84040' }}
+              >
+                Entfernen
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="mt-4 flex flex-wrap items-end gap-2">
+        <div>
+          <label className="mb-1 block text-xs" style={{ fontFamily: 'var(--font-body)', color: '#666' }}>Von</label>
+          <input type="date" value={von} onChange={(e) => setVon(e.target.value)} className="rounded-lg px-3 py-2 outline-none" style={inputStyle} />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs" style={{ fontFamily: 'var(--font-body)', color: '#666' }}>Bis</label>
+          <input type="date" value={bis} onChange={(e) => setBis(e.target.value)} className="rounded-lg px-3 py-2 outline-none" style={inputStyle} />
+        </div>
+        <div className="flex-1" style={{ minWidth: '140px' }}>
+          <label className="mb-1 block text-xs" style={{ fontFamily: 'var(--font-body)', color: '#666' }}>Grund (optional)</label>
+          <input value={grund} onChange={(e) => setGrund(e.target.value)} className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} placeholder="z.B. Vermietet, Wartung" />
+        </div>
+        <button
+          onClick={addBlock}
+          disabled={!von || !bis}
+          className="rounded-full px-4 py-2 text-sm font-bold text-white disabled:opacity-40"
+          style={{ fontFamily: 'var(--font-body)', background: '#22a867' }}
+        >
+          Sperren
         </button>
       </div>
     </div>

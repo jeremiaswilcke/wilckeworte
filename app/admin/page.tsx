@@ -267,7 +267,7 @@ export default function AdminPage() {
                       </span>
                       <span className="ml-2" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: '#999' }}>
                         {booking.type === 'paket' && details.paket_name}
-                        {booking.type === 'equipment' && details.equipment_name}
+                        {booking.type === 'equipment' && `${details.items?.length ?? 0} Geräte · ${details.von}–${details.bis}`}
                         {booking.type === 'projekt' && details.art}
                         {booking.type === 'kontakt' && details.betreff}
                       </span>
@@ -318,8 +318,9 @@ export default function AdminPage() {
 
                         {booking.type === 'equipment' && (
                           <>
-                            <Detail label="Equipment" value={details.equipment_name} />
-                            <Detail label="Zeitraum" value={`${details.von} – ${details.bis}`} />
+                            <Detail label="Zeitraum" value={`${details.von} – ${details.bis} (${details.tage} Tage)`} />
+                            <Detail label="Equipment" value={(details.items ?? []).map((i: { name: string; preis_tag: number | null }) => i.preis_tag != null ? `${i.name} (€${i.preis_tag}/Tag)` : i.name).join('\n')} span />
+                            <Detail label="Gesamtsumme" value={`€${details.summe} (auf Rechnung)`} />
                             {details.nachricht && <Detail label="Nachricht" value={details.nachricht} span />}
                           </>
                         )}
@@ -376,7 +377,7 @@ export default function AdminPage() {
                         <a
                           href={`mailto:${booking.email}?subject=${encodeURIComponent(
                             booking.type === 'paket' ? `Ihre Buchung: ${details.paket_name}` :
-                            booking.type === 'equipment' ? `Equipment-Anfrage: ${details.equipment_name}` :
+                            booking.type === 'equipment' ? `Ihre Equipment-Anfrage` :
                             booking.type === 'kontakt' ? `Ihre Nachricht an Wilcke Worte` :
                             'Ihre Projektanfrage'
                           )}`}

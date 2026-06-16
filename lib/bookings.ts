@@ -33,10 +33,18 @@ export interface ProjektDetails {
   budget?: string
 }
 
+export interface EquipmentCartItem {
+  id: number
+  name: string
+  preis_tag: number | null
+}
+
 export interface EquipmentDetails {
-  equipment_name: string
   von: string
   bis: string
+  tage: number
+  summe: number
+  items: EquipmentCartItem[]
   nachricht?: string
 }
 

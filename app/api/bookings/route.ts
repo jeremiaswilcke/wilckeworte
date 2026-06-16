@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createBooking, type BookingType } from '@/lib/bookings'
+import { listEquipment } from '@/lib/equipment'
+import { getUnavailableEquipmentIds } from '@/lib/equipment-blocks'
 import { sendNotification } from '@/lib/email'
 
 const TYPE_LABELS: Record<BookingType, string> = {
@@ -70,13 +72,39 @@ export async function POST(req: NextRequest) {
         budget: sanitize(body.budget),
       }
     } else {
-      if (!body.equipment_name || !body.von || !body.bis) {
-        return NextResponse.json({ error: 'Equipment, Von- und Bis-Datum sind Pflichtfelder.' }, { status: 400 })
+      const von = sanitize(body.von)
+      const bis = sanitize(body.bis)
+      const rawItems: unknown[] = Array.isArray(body.items) ? body.items : []
+      const itemIds: number[] = [...new Set(rawItems.map((x) => Number(x)).filter((n) => Number.isFinite(n)))]
+
+      if (!von || !bis || itemIds.length === 0) {
+        return NextResponse.json({ error: 'Bitte Zeitraum und mindestens ein Gerät wählen.' }, { status: 400 })
       }
+      if (von > bis) {
+        return NextResponse.json({ error: 'Das Von-Datum darf nicht nach dem Bis-Datum liegen.' }, { status: 400 })
+      }
+
+      const allEquipment = await listEquipment(false)
+      const chosen = allEquipment.filter((e) => itemIds.includes(e.id))
+      if (chosen.length === 0) {
+        return NextResponse.json({ error: 'Kein gültiges Equipment ausgewählt.' }, { status: 400 })
+      }
+
+      const unavailable = await getUnavailableEquipmentIds(von, bis)
+      const conflict = chosen.find((e) => unavailable.includes(e.id))
+      if (conflict) {
+        return NextResponse.json({ error: `"${conflict.name}" ist im gewählten Zeitraum nicht mehr verfügbar.` }, { status: 409 })
+      }
+
+      const tage = Math.max(1, Math.round((new Date(bis).getTime() - new Date(von).getTime()) / 86_400_000) + 1)
+      const summe = tage * chosen.reduce((sum, e) => sum + (e.preis_tag ?? 0), 0)
+
       details = {
-        equipment_name: sanitize(body.equipment_name),
-        von: sanitize(body.von),
-        bis: sanitize(body.bis),
+        von,
+        bis,
+        tage,
+        summe,
+        items: chosen.map((e) => ({ id: e.id, name: e.name, preis_tag: e.preis_tag })),
         nachricht: sanitize(body.nachricht),
       }
     }
@@ -101,8 +129,12 @@ export async function POST(req: NextRequest) {
       if (details.budget) detailLines.push(`Budget: ${String(details.budget)}`)
       detailLines.push(`Beschreibung: ${String(details.beschreibung)}`)
     } else {
-      detailLines.push(`Equipment: ${String(details.equipment_name)}`)
-      detailLines.push(`Zeitraum: ${String(details.von)} bis ${String(details.bis)}`)
+      detailLines.push(`Zeitraum: ${String(details.von)} bis ${String(details.bis)} (${String(details.tage)} Tage)`)
+      const items = (details.items as { name: string; preis_tag: number | null }[]) ?? []
+      for (const it of items) {
+        detailLines.push(`- ${it.name}${it.preis_tag != null ? ` (€${it.preis_tag}/Tag)` : ''}`)
+      }
+      detailLines.push(`Gesamtsumme: €${String(details.summe)} (auf Rechnung)`)
       if (details.nachricht) detailLines.push(`Nachricht: ${String(details.nachricht)}`)
     }
 
