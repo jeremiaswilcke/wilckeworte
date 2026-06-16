@@ -28,7 +28,10 @@ export default function EquipmentAdminPage() {
     }
   }, [])
 
-  useEffect(() => { loadItems() }, [loadItems])
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadItems()
+  }, [loadItems])
 
   async function saveItem(id: number | null, data: Partial<EquipmentItem>) {
     if (id) {

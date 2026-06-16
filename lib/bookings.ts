@@ -1,4 +1,4 @@
-import { getDb, initDb } from './db'
+import { getDb } from './db'
 
 export type BookingType = 'paket' | 'projekt' | 'equipment'
 export type BookingStatus = 'pending' | 'accepted' | 'rejected'
@@ -40,12 +40,14 @@ export interface EquipmentDetails {
   nachricht?: string
 }
 
-let initialized = false
+type BookingDetails = PaketDetails | ProjektDetails | EquipmentDetails
+type BookingRow = Omit<Booking, 'details'> & { details: BookingDetails | string }
 
-async function ensureInit() {
-  if (!initialized) {
-    await initDb()
-    initialized = true
+function normalizeBooking(row: BookingRow): Booking {
+  return {
+    ...row,
+    id: Number(row.id),
+    details: typeof row.details === 'string' ? row.details : JSON.stringify(row.details),
   }
 }
 
@@ -55,106 +57,72 @@ export async function createBooking(data: {
   email: string
   phone?: string
   company?: string
-  details: PaketDetails | ProjektDetails | EquipmentDetails
+  details: BookingDetails
 }): Promise<Booking> {
-  await ensureInit()
-  const db = getDb()
+  const { data: booking, error } = await getDb()
+    .from('worte_bookings')
+    .insert({
+      type: data.type,
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      company: data.company ?? null,
+      details: data.details,
+    })
+    .select('*')
+    .single()
 
-  const result = await db.execute({
-    sql: `INSERT INTO bookings (type, name, email, phone, company, details) VALUES (?, ?, ?, ?, ?, ?)`,
-    args: [
-      data.type,
-      data.name,
-      data.email,
-      data.phone ?? null,
-      data.company ?? null,
-      JSON.stringify(data.details),
-    ],
-  })
-
-  const booking = await getBookingById(Number(result.lastInsertRowid))
-  return booking!
+  if (error) throw error
+  return normalizeBooking(booking as BookingRow)
 }
 
 export async function getBookingById(id: number): Promise<Booking | null> {
-  await ensureInit()
-  const db = getDb()
-  const result = await db.execute({ sql: 'SELECT * FROM bookings WHERE id = ?', args: [id] })
-  if (result.rows.length === 0) return null
-  return rowToBooking(result.rows[0])
+  const { data, error } = await getDb().from('worte_bookings').select('*').eq('id', id).maybeSingle()
+  if (error) throw error
+  return data ? normalizeBooking(data as BookingRow) : null
 }
 
 export async function listBookings(filters?: {
   type?: BookingType
   status?: BookingStatus
 }): Promise<Booking[]> {
-  await ensureInit()
-  const db = getDb()
+  let query = getDb().from('worte_bookings').select('*').order('created_at', { ascending: false })
+  if (filters?.type) query = query.eq('type', filters.type)
+  if (filters?.status) query = query.eq('status', filters.status)
 
-  const conditions: string[] = []
-  const args: (string | number)[] = []
-
-  if (filters?.type) {
-    conditions.push('type = ?')
-    args.push(filters.type)
-  }
-  if (filters?.status) {
-    conditions.push('status = ?')
-    args.push(filters.status)
-  }
-
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-  const result = await db.execute({ sql: `SELECT * FROM bookings ${where} ORDER BY created_at DESC`, args })
-
-  return result.rows.map(rowToBooking)
+  const { data, error } = await query
+  if (error) throw error
+  return (data as BookingRow[]).map(normalizeBooking)
 }
 
-export async function updateBookingStatus(id: number, status: BookingStatus, adminNotes?: string): Promise<Booking | null> {
-  await ensureInit()
-  const db = getDb()
+export async function updateBookingStatus(
+  id: number,
+  status: BookingStatus,
+  adminNotes?: string,
+): Promise<Booking | null> {
+  const { data, error } = await getDb()
+    .from('worte_bookings')
+    .update({
+      status,
+      admin_notes: adminNotes ?? null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select('*')
+    .maybeSingle()
 
-  await db.execute({
-    sql: `UPDATE bookings SET status = ?, admin_notes = ?, updated_at = datetime('now') WHERE id = ?`,
-    args: [status, adminNotes ?? null, id],
-  })
-
-  return getBookingById(id)
+  if (error) throw error
+  return data ? normalizeBooking(data as BookingRow) : null
 }
 
 export async function getBookingStats() {
-  await ensureInit()
-  const db = getDb()
+  const { data, error } = await getDb().from('worte_bookings').select('status')
+  if (error) throw error
 
-  const result = await db.execute(`
-    SELECT
-      COUNT(*) as total,
-      SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-      SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) as accepted,
-      SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected
-    FROM bookings
-  `)
-
-  const row = result.rows[0]
   return {
-    total: Number(row.total) || 0,
-    pending: Number(row.pending) || 0,
-    accepted: Number(row.accepted) || 0,
-    rejected: Number(row.rejected) || 0,
-  }
-}
-
-function rowToBooking(row: Record<string, unknown>): Booking {
-  return {
-    id: Number(row.id),
-    type: row.type as BookingType,
-    status: row.status as BookingStatus,
-    name: row.name as string,
-    email: row.email as string,
-    phone: (row.phone as string) || null,
-    company: (row.company as string) || null,
-    details: row.details as string,
-    admin_notes: (row.admin_notes as string) || null,
-    created_at: row.created_at as string,
-    updated_at: row.updated_at as string,
+    total: data.length,
+    pending: data.filter((row) => row.status === 'pending').length,
+    accepted: data.filter((row) => row.status === 'accepted').length,
+    rejected: data.filter((row) => row.status === 'rejected').length,
   }
 }

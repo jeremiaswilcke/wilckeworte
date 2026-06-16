@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 // TODO: Replace with WP data fetching
 const placeholderPosts: Record<string, { title: string; content: string; date: string; excerpt: string }> = {
@@ -56,9 +57,9 @@ export default async function BlogPostPage({ params }: Props) {
           <p className="mt-2" style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}>
             Beitrag nicht gefunden.
           </p>
-          <a href="/blog" className="mt-4 inline-block" style={{ color: 'var(--coral)', fontFamily: 'var(--font-body)' }}>
+          <Link href="/blog" className="mt-4 inline-block" style={{ color: 'var(--coral)', fontFamily: 'var(--font-body)' }}>
             ← Zurück zum Blog
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -67,13 +68,13 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <article className="px-6 pt-24 pb-16" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <div className="mx-auto max-w-3xl">
-        <a
+        <Link
           href="/blog"
           className="mb-8 inline-block transition-colors hover:text-[var(--coral)]"
           style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}
         >
           ← Zurück zum Blog
-        </a>
+        </Link>
 
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-faint)' }}>
           {new Date(post.date).toLocaleDateString('de-AT', { year: 'numeric', month: 'long', day: 'numeric' })}

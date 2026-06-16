@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { siteContent } from '@/lib/seed-data'
 import { BookingModal } from '@/components/BookingModal'
 
@@ -76,9 +77,12 @@ export default function EquipmentPage() {
                 style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
               >
                 {item.image_url ? (
-                  <img
+                  <Image
                     src={item.image_url}
                     alt={item.name}
+                    width={800}
+                    height={600}
+                    unoptimized
                     className="aspect-[4/3] w-full object-cover"
                   />
                 ) : (

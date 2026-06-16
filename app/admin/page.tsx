@@ -69,6 +69,7 @@ export default function AdminPage() {
   }, [filterType, filterStatus])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (authed) loadBookings()
   }, [authed, loadBookings])
 

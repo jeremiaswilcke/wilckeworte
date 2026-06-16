@@ -1,44 +1,23 @@
-import { createClient, type Client } from '@libsql/client'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-let client: Client | null = null
+let adminClient: SupabaseClient | null = null
 
-export function getDb(): Client {
-  if (client) return client
+export function getDb(): SupabaseClient {
+  if (adminClient) return adminClient
 
-  client = createClient({
-    url: process.env.TURSO_URL || 'file:data/bookings.db',
-    authToken: process.env.TURSO_AUTH_TOKEN,
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !serviceRoleKey) {
+    throw new Error('Supabase ist nicht konfiguriert. NEXT_PUBLIC_SUPABASE_URL und SUPABASE_SERVICE_ROLE_KEY fehlen.')
+  }
+
+  adminClient = createClient(url, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
   })
 
-  return client
-}
-
-export async function initDb() {
-  const db = getDb()
-  await db.executeMultiple(`
-    CREATE TABLE IF NOT EXISTS bookings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      type TEXT NOT NULL CHECK(type IN ('paket', 'projekt', 'equipment')),
-      status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'accepted', 'rejected')),
-      name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      phone TEXT,
-      company TEXT,
-      details TEXT NOT NULL,
-      admin_notes TEXT,
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS equipment (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      description TEXT NOT NULL,
-      preis_tag INTEGER,
-      image_url TEXT,
-      active INTEGER NOT NULL DEFAULT 1,
-      sort_order INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-  `)
+  return adminClient
 }
