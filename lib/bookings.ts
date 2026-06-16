@@ -1,6 +1,6 @@
 import { getDb } from './db'
 
-export type BookingType = 'paket' | 'projekt' | 'equipment'
+export type BookingType = 'paket' | 'projekt' | 'equipment' | 'kontakt'
 export type BookingStatus = 'pending' | 'accepted' | 'rejected'
 
 export interface Booking {
@@ -40,7 +40,12 @@ export interface EquipmentDetails {
   nachricht?: string
 }
 
-type BookingDetails = PaketDetails | ProjektDetails | EquipmentDetails
+export interface KontaktDetails {
+  betreff: string
+  nachricht: string
+}
+
+type BookingDetails = PaketDetails | ProjektDetails | EquipmentDetails | KontaktDetails
 type BookingRow = Omit<Booking, 'details'> & { details: BookingDetails | string }
 
 function normalizeBooking(row: BookingRow): Booking {

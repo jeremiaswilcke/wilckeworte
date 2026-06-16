@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createBooking, type BookingType } from '@/lib/bookings'
+import { sendNotification } from '@/lib/email'
+
+const TYPE_LABELS: Record<BookingType, string> = {
+  paket: 'Paket-Buchung',
+  projekt: 'Projektanfrage',
+  equipment: 'Equipment-Anfrage',
+  kontakt: 'Kontaktanfrage',
+}
 
 function stripTags(str: string): string {
   return str.replace(/<[^>]*>/g, '')
@@ -81,6 +89,29 @@ export async function POST(req: NextRequest) {
       company,
       details: details as never,
     })
+
+    const detailLines: string[] = []
+    if (type === 'paket') {
+      detailLines.push(`Paket: ${String(details.paket_name)} (${String(details.paket_id)})`)
+      detailLines.push(`Preis: €${String(details.preis)}/${String(details.einheit)}`)
+      if (details.startdatum) detailLines.push(`Startdatum: ${String(details.startdatum)}`)
+      if (details.nachricht) detailLines.push(`Nachricht: ${String(details.nachricht)}`)
+    } else if (type === 'projekt') {
+      detailLines.push(`Art: ${String(details.art)}`)
+      if (details.budget) detailLines.push(`Budget: ${String(details.budget)}`)
+      detailLines.push(`Beschreibung: ${String(details.beschreibung)}`)
+    } else {
+      detailLines.push(`Equipment: ${String(details.equipment_name)}`)
+      detailLines.push(`Zeitraum: ${String(details.von)} bis ${String(details.bis)}`)
+      if (details.nachricht) detailLines.push(`Nachricht: ${String(details.nachricht)}`)
+    }
+
+    const lines = [`Name: ${name}`, `E-Mail: ${email}`]
+    if (phone) lines.push(`Telefon: ${phone}`)
+    if (company) lines.push(`Firma: ${company}`)
+    lines.push('', ...detailLines, '', `Im Dashboard ansehen: ${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/admin`)
+
+    await sendNotification(`Neue ${TYPE_LABELS[type]}: ${name}`, lines)
 
     return NextResponse.json({ success: true, id: booking.id })
   } catch {

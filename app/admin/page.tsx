@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 
 interface Booking {
   id: number
-  type: 'paket' | 'projekt' | 'equipment'
+  type: 'paket' | 'projekt' | 'equipment' | 'kontakt'
   status: 'pending' | 'accepted' | 'rejected'
   name: string
   email: string
@@ -27,6 +27,7 @@ const TYPE_LABELS: Record<string, string> = {
   paket: 'Paket',
   projekt: 'Projekt',
   equipment: 'Equipment',
+  kontakt: 'Kontakt',
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -208,6 +209,7 @@ export default function AdminPage() {
             <option value="paket">Pakete</option>
             <option value="projekt">Projekte</option>
             <option value="equipment">Equipment</option>
+            <option value="kontakt">Kontakt</option>
           </select>
           <select
             value={filterStatus}
@@ -267,6 +269,7 @@ export default function AdminPage() {
                         {booking.type === 'paket' && details.paket_name}
                         {booking.type === 'equipment' && details.equipment_name}
                         {booking.type === 'projekt' && details.art}
+                        {booking.type === 'kontakt' && details.betreff}
                       </span>
                     </div>
                     {/* Date */}
@@ -321,6 +324,13 @@ export default function AdminPage() {
                           </>
                         )}
 
+                        {booking.type === 'kontakt' && (
+                          <>
+                            <Detail label="Betreff" value={details.betreff} />
+                            <Detail label="Nachricht" value={details.nachricht} span />
+                          </>
+                        )}
+
                         {booking.admin_notes && <Detail label="Admin-Notizen" value={booking.admin_notes} span />}
                       </div>
 
@@ -367,6 +377,7 @@ export default function AdminPage() {
                           href={`mailto:${booking.email}?subject=${encodeURIComponent(
                             booking.type === 'paket' ? `Ihre Buchung: ${details.paket_name}` :
                             booking.type === 'equipment' ? `Equipment-Anfrage: ${details.equipment_name}` :
+                            booking.type === 'kontakt' ? `Ihre Nachricht an Wilcke Worte` :
                             'Ihre Projektanfrage'
                           )}`}
                           className="rounded-full px-5 py-2 text-sm"

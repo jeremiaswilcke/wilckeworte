@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createBooking } from '@/lib/bookings'
+import { sendNotification } from '@/lib/email'
 
 const rateLimit = new Map<string, { count: number; reset: number }>()
 const RATE_LIMIT = 3
@@ -53,10 +55,24 @@ export async function POST(req: NextRequest) {
       nachricht: stripTags(nachricht.trim()),
     }
 
-    // TODO: Integrate Nodemailer or Resend to send email to CONTACT_EMAIL_TO
-    console.log('Contact form submission:', sanitized)
+    const booking = await createBooking({
+      type: 'kontakt',
+      name: sanitized.name,
+      email: sanitized.email,
+      details: { betreff: sanitized.betreff, nachricht: sanitized.nachricht } as never,
+    })
 
-    return NextResponse.json({ success: true })
+    await sendNotification(`Neue Kontaktanfrage: ${sanitized.betreff}`, [
+      `Name: ${sanitized.name}`,
+      `E-Mail: ${sanitized.email}`,
+      `Betreff: ${sanitized.betreff}`,
+      '',
+      sanitized.nachricht,
+      '',
+      `Im Dashboard ansehen: ${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/admin`,
+    ])
+
+    return NextResponse.json({ success: true, id: booking.id })
   } catch {
     return NextResponse.json({ error: 'Ungültige Anfrage.' }, { status: 400 })
   }
