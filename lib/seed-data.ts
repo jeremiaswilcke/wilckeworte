@@ -12,6 +12,7 @@ export interface Service {
   subtitle: string
   description: string
   image_label: string
+  image: string
 }
 
 export interface ProcessStep {
@@ -35,12 +36,14 @@ export interface EquipmentItem {
   description: string
   preis_tag: number | null
   image_label: string
+  image: string
 }
 
 export interface TeamMember {
   name: string
   rolle: string
   kurz_bio: string
+  image: string
 }
 
 export interface CTAContent {
@@ -71,6 +74,7 @@ export const siteContent = {
       subtitle: "& Audio",
       description: "Vom geistlichen Impuls bis zur Interviewreihe — professionell produziert, auf allen Plattformen. Schnitt, Musik, Hosting und Shorts inklusive.",
       image_label: "Studio-Mikrofon / SM7B Close-Up",
+      image: "/media/studio-wide.jpg",
     },
     {
       num: "02",
@@ -78,6 +82,7 @@ export const siteContent = {
       subtitle: "& Film",
       description: "4K-Produktionen mit Kinoästhetik. Dokumentation, Formatentwicklung, Farbkorrektur — deine Geschichte im richtigen Licht.",
       image_label: "Kamera S1H / Gimbal-Shot",
+      image: "/media/studio-light.jpg",
     },
     {
       num: "03",
@@ -85,6 +90,7 @@ export const siteContent = {
       subtitle: "& Events",
       description: "Mehrkamera-Livestreams mit Bildregie, Bauchbinden und direkter Ausspielung auf YouTube, Facebook oder deine Website.",
       image_label: "Livestream-Setup / ATEM Mischer",
+      image: "/media/studio-portrait.jpg",
     },
   ],
 
@@ -108,16 +114,16 @@ export const siteContent = {
   },
 
   equipment_highlights: [
-    { name: "Panasonic Lumix S1H", description: "Netflix-approved Cinema-Kamera. 6K intern, Dual Native ISO, V-Log — auch zum Verleih.", preis_tag: 50, image_label: "Lumix S1H Produktfoto" },
-    { name: "Shure SM7B", description: "Broadcast-Standard für Podcast und Voiceover. Dreifach vorhanden im Studio.", preis_tag: null, image_label: "SM7B am Stativ mit Pop-Filter" },
-    { name: "Studio Mauerbach", description: "LED Panels, Greenscreen, Gimbal, ATEM Mischer — alles für deine Produktion unter einem Dach.", preis_tag: null, image_label: "Studio-Gesamtansicht / Weitwinkel" },
+    { name: "Panasonic Lumix S1H", description: "Netflix-approved Cinema-Kamera. 6K intern, Dual Native ISO, V-Log — auch zum Verleih.", preis_tag: 50, image_label: "Lumix S1H Produktfoto", image: "/media/studio-light.jpg" },
+    { name: "Shure SM7B", description: "Broadcast-Standard für Podcast und Voiceover. Dreifach vorhanden im Studio.", preis_tag: null, image_label: "SM7B am Stativ mit Pop-Filter", image: "/media/studio-portrait.jpg" },
+    { name: "Studio Mauerbach", description: "LED Panels, Greenscreen, Gimbal, ATEM Mischer — alles für deine Produktion unter einem Dach.", preis_tag: null, image_label: "Studio-Gesamtansicht / Weitwinkel", image: "/media/studio-wide.jpg" },
   ],
 
   team: [
-    { name: "Adina Wilcke", rolle: "Kommunikation & Rhetorik", kurz_bio: "Poetry Slammerin, Schauspielerin und Moderatorin mit Gespür für Sprache und Wirkung." },
-    { name: "Jeremias Wilcke", rolle: "Studioleiter & Produzent", kurz_bio: "Medienschaffender an der Schnittstelle von Kirche, Kultur und Kommunikation." },
-    { name: "Felix Heisz", rolle: "Editor", kurz_bio: "Versierter Cutter mit feinem Gespür für Bild, Ton und Rhythmus." },
-    { name: "Thomas Buswell", rolle: "Bildregie", kurz_bio: "Sicheres Auge für Komposition und Timing bei Studioproduktionen." },
+    { name: "Adina Wilcke", rolle: "Kommunikation & Rhetorik", kurz_bio: "Poetry Slammerin, Schauspielerin und Moderatorin mit Gespür für Sprache und Wirkung.", image: "/media/adina.png" },
+    { name: "Jeremias Wilcke", rolle: "Studioleiter & Produzent", kurz_bio: "Medienschaffender an der Schnittstelle von Kirche, Kultur und Kommunikation.", image: "/media/jeremias.png" },
+    { name: "Felix Heisz", rolle: "Editor", kurz_bio: "Versierter Cutter mit feinem Gespür für Bild, Ton und Rhythmus.", image: "/media/felix.png" },
+    { name: "Thomas Buswell", rolle: "Bildregie", kurz_bio: "Sicheres Auge für Komposition und Timing bei Studioproduktionen.", image: "/media/thomas.png" },
   ],
 
   cta: {

@@ -1,23 +1,143 @@
-import { ContactForm } from '@/components/ContactForm'
-import Link from 'next/link'
+import Image from 'next/image'
+import { siteContent } from '@/lib/seed-data'
+
+const footerNav = [
+  { label: 'Services', href: '#services' },
+  { label: 'Preise', href: '#preise' },
+  { label: 'Equipment', href: '#equipment' },
+  { label: 'Team', href: '#team' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Kontakt', href: '#kontakt' },
+]
+
+const legalNav = [
+  { label: 'Impressum', href: '/impressum' },
+  { label: 'Datenschutz', href: '/datenschutz' },
+  { label: 'AGB', href: '/agb' },
+]
 
 export function Footer() {
+  const { contact } = siteContent
+
   return (
-    <footer id="kontakt" className="site-footer">
-      <div className="footer-contact">
-        <div>
-          <h2>Schreibe uns gerne:</h2>
-          <p>Ob Verkündigung, Bildung oder Engagement – wir unterstützen dich, damit deine Botschaft Menschen erreicht.</p>
+    <footer
+      className="border-t"
+      style={{ background: 'var(--bg-alt)', borderColor: 'var(--border)' }}
+    >
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-3">
+        {/* Brand */}
+        <div className="flex flex-col gap-4">
+          <Image
+            src="/images/Logo_wilcke.png"
+            alt="Wilcke Worte und Visionen"
+            width={76}
+            height={28}
+            style={{ height: '28px', width: 'auto', objectFit: 'contain' }}
+          />
+          <p
+            className="max-w-xs"
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--text-muted)',
+              lineHeight: '1.7',
+            }}
+          >
+            Kreatives Studio für Wort, Bild und Klang — Medien für Menschen mit Mission.
+          </p>
         </div>
-        <ContactForm />
+
+        {/* Navigation */}
+        <div>
+          <h3
+            className="mb-4 text-xs uppercase tracking-[0.15em]"
+            style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)' }}
+          >
+            Navigation
+          </h3>
+          <ul className="flex flex-col gap-2">
+            {footerNav.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  className="transition-colors hover:text-[var(--coral)]"
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Legal + Contact */}
+        <div>
+          <h3
+            className="mb-4 text-xs uppercase tracking-[0.15em]"
+            style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)' }}
+          >
+            Kontakt & Rechtliches
+          </h3>
+          <ul className="flex flex-col gap-2">
+            <li>
+              <a
+                href={`tel:${contact.telefon.replace(/\s/g, '')}`}
+                className="transition-colors hover:text-[var(--coral)]"
+                style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}
+              >
+                {contact.telefon}
+              </a>
+            </li>
+            <li>
+              <a
+                href={`mailto:${contact.email}`}
+                className="transition-colors hover:text-[var(--coral)]"
+                style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}
+              >
+                {contact.email}
+              </a>
+            </li>
+            <li
+              style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}
+            >
+              {contact.adresse}
+            </li>
+          </ul>
+          <ul className="mt-6 flex gap-4">
+            {legalNav.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  className="transition-colors hover:text-[var(--coral)]"
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--text-faint)',
+                  }}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div className="footer-columns">
-        <div><h3>Informationen</h3><Link href="/#podcast1">Podcast</Link><Link href="/#equipment">Unser Equipment</Link></div>
-        <div><h3>Informationen</h3><Link href="/#team">Unser Team</Link><Link href="/#preise">Preismodelle</Link></div>
-        <div><h3>Kontakt aufnehmen</h3><a href="tel:+436767923929">+43 676 792 39 29</a><a href="mailto:studio@wilckeworte.at">studio@wilckeworte.at</a></div>
-        <div><h3>Studio</h3><p>Grenzgasse 4<br />3001 Mauerbach</p><Link href="/impressum">Impressum</Link><Link href="/datenschutz">Datenschutz</Link></div>
+
+      <div
+        className="border-t px-6 py-4 text-center"
+        style={{
+          borderColor: 'var(--border)',
+          fontFamily: 'var(--font-body)',
+          fontSize: 'var(--text-sm)',
+          color: 'var(--text-faint)',
+        }}
+      >
+        © {new Date().getFullYear()} Wilcke Worte und Visionen. Alle Rechte vorbehalten.
       </div>
-      <p className="copyright">© Copyright by Wilcke, Worte und Visionen {new Date().getFullYear()}</p>
     </footer>
   )
 }
