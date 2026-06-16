@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       description: body.description,
       preis_tag: body.preis_tag != null ? Number(body.preis_tag) : null,
       image_url: body.image_url || null,
+      category: body.category || 'Sonstiges',
       sort_order: Number(body.sort_order) || 0,
     })
 

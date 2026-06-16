@@ -21,6 +21,7 @@ create table if not exists public.worte_equipment (
   description text not null,
   preis_tag integer,
   image_url text,
+  category text not null default 'Sonstiges',
   active boolean not null default true,
   sort_order integer not null default 0,
   created_at timestamptz not null default now()

@@ -25,6 +25,7 @@ export async function PATCH(
       description: body.description,
       preis_tag: body.preis_tag,
       image_url: body.image_url,
+      category: body.category,
       active: body.active,
       sort_order: body.sort_order,
     })

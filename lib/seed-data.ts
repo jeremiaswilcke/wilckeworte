@@ -114,8 +114,8 @@ export const siteContent = {
   },
 
   equipment_highlights: [
-    { name: "Panasonic Lumix S1H", description: "Netflix-approved Cinema-Kamera. 6K intern, Dual Native ISO, V-Log — auch zum Verleih.", preis_tag: 50, image_label: "Lumix S1H Produktfoto", image: "/media/studio-light.jpg" },
-    { name: "Shure SM7B", description: "Broadcast-Standard für Podcast und Voiceover. Dreifach vorhanden im Studio.", preis_tag: null, image_label: "SM7B am Stativ mit Pop-Filter", image: "/media/studio-portrait.jpg" },
+    { name: "Panasonic Lumix S1H", description: "Netflix-approved Cinema-Kamera. 6K intern, Dual Native ISO, V-Log — auch zum Verleih.", preis_tag: 60, image_label: "Lumix S1H Produktfoto", image: "/media/studio-light.jpg" },
+    { name: "Shure SM7B", description: "Broadcast-Standard für Podcast und Voiceover. Dreifach vorhanden im Studio.", preis_tag: 15, image_label: "SM7B am Stativ mit Pop-Filter", image: "/media/studio-portrait.jpg" },
     { name: "Studio Mauerbach", description: "LED Panels, Greenscreen, Gimbal, ATEM Mischer — alles für deine Produktion unter einem Dach.", preis_tag: null, image_label: "Studio-Gesamtansicht / Weitwinkel", image: "/media/studio-wide.jpg" },
   ],
 

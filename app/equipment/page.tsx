@@ -11,6 +11,21 @@ interface EquipmentItem {
   description: string
   preis_tag: number | null
   image_url: string | null
+  category: string
+}
+
+const CATEGORY_ORDER = ['Pakete', 'Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik']
+
+function groupByCategory(items: EquipmentItem[]): [string, EquipmentItem[]][] {
+  const groups = new Map<string, EquipmentItem[]>()
+  for (const item of items) {
+    const key = item.category || 'Sonstiges'
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push(item)
+  }
+  const ordered = CATEGORY_ORDER.filter((c) => groups.has(c))
+  const rest = [...groups.keys()].filter((c) => !CATEGORY_ORDER.includes(c)).sort()
+  return [...ordered, ...rest].map((c) => [c, groups.get(c)!])
 }
 
 export default function EquipmentPage() {
@@ -32,13 +47,14 @@ export default function EquipmentPage() {
             description: e.description,
             preis_tag: e.preis_tag,
             image_url: null,
+            category: 'Equipment',
           })))
         }
         setLoaded(true)
       })
       .catch(() => {
         setItems(siteContent.equipment_highlights.map((e, i) => ({
-          id: i, name: e.name, description: e.description, preis_tag: e.preis_tag, image_url: null,
+          id: i, name: e.name, description: e.description, preis_tag: e.preis_tag, image_url: null, category: 'Equipment',
         })))
         setLoaded(true)
       })
@@ -69,13 +85,22 @@ export default function EquipmentPage() {
         {!loaded ? (
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}>Lädt...</p>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col rounded-2xl overflow-hidden"
-                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-              >
+          <div className="space-y-16">
+            {groupByCategory(items).map(([category, group]) => (
+              <div key={category}>
+                <h2
+                  className="mb-6"
+                  style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', color: 'var(--text)' }}
+                >
+                  {category}
+                </h2>
+                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex flex-col rounded-2xl overflow-hidden"
+                      style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                    >
                 {item.image_url ? (
                   <Image
                     src={item.image_url}
@@ -118,6 +143,9 @@ export default function EquipmentPage() {
                   >
                     Jetzt anfragen
                   </button>
+                </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}

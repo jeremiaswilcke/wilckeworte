@@ -8,9 +8,12 @@ interface EquipmentItem {
   description: string
   preis_tag: number | null
   image_url: string | null
+  category: string
   active: boolean
   sort_order: number
 }
+
+const CATEGORIES = ['Pakete', 'Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik', 'Sonstiges']
 
 export default function EquipmentAdminPage() {
   const [authed, setAuthed] = useState(false)
@@ -138,6 +141,9 @@ export default function EquipmentAdminPage() {
                         €{item.preis_tag}/Tag
                       </span>
                     )}
+                    <span className="ml-2" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: '#888' }}>
+                      {item.category}
+                    </span>
                     <p className="mt-1 truncate" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: '#666' }}>
                       {item.description}
                     </p>
@@ -197,6 +203,7 @@ function EquipmentForm({
   const [description, setDescription] = useState(initial?.description ?? '')
   const [preis, setPreis] = useState(initial?.preis_tag?.toString() ?? '')
   const [imageUrl, setImageUrl] = useState(initial?.image_url ?? '')
+  const [category, setCategory] = useState(initial?.category ?? 'Kameras')
   const [sortOrder, setSortOrder] = useState(initial?.sort_order?.toString() ?? '0')
 
   const inputStyle = {
@@ -248,6 +255,21 @@ function EquipmentForm({
           style={inputStyle}
         />
       </div>
+      <div>
+        <label className="mb-1 block text-xs uppercase tracking-[0.15em]" style={{ fontFamily: 'var(--font-body)', color: '#666' }}>
+          Kategorie
+        </label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-lg px-4 py-2.5 outline-none"
+          style={inputStyle}
+        >
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-xs uppercase tracking-[0.15em]" style={{ fontFamily: 'var(--font-body)', color: '#666' }}>
@@ -277,7 +299,7 @@ function EquipmentForm({
       <div className="flex gap-3 pt-2">
         <button
           onClick={() => onSave({
-            name, description,
+            name, description, category,
             preis_tag: preis ? Number(preis) : null,
             image_url: imageUrl || null,
             sort_order: Number(sortOrder) || 0,
