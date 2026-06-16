@@ -14,7 +14,7 @@ interface EquipmentItem {
   category: string
 }
 
-const CATEGORY_ORDER = ['Pakete', 'Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik']
+const CATEGORY_ORDER = ['Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik']
 
 function groupByCategory(items: EquipmentItem[]): [string, EquipmentItem[]][] {
   const groups = new Map<string, EquipmentItem[]>()

@@ -13,7 +13,7 @@ interface EquipmentItem {
   sort_order: number
 }
 
-const CATEGORIES = ['Pakete', 'Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik', 'Sonstiges']
+const CATEGORIES = ['Kameras', 'Objektive', 'Mikrofone', 'Licht', 'Bewegung', 'Regie & Tontechnik', 'Sonstiges']
 
 export default function EquipmentAdminPage() {
   const [authed, setAuthed] = useState(false)

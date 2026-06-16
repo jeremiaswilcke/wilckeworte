@@ -13,12 +13,6 @@ export interface Equipment {
 }
 
 const defaults = [
-  { name: 'Podcast-Set', description: '2x Shure SM7B, Behringer XR18 und NEEWER LED Panels. Sofort sendebereit für Podcast und Voiceover.', preis_tag: 70, category: 'Pakete', sort_order: 0 },
-  { name: 'Videodreh-Set', description: 'Lumix S5II, Objektiv 24-105 mm, Manfrotto Gimbal und LED Panels. Vielseitig für Reportagen und Formate.', preis_tag: 90, category: 'Pakete', sort_order: 1 },
-  { name: 'Interview-Set', description: 'Lumix S1H, 50 mm f/1.4, Rode NTG4+ und Rollei Candela Keylight. Hochwertige Interviews und Portraits.', preis_tag: 100, category: 'Pakete', sort_order: 2 },
-  { name: 'Story-Set', description: 'Lumix S5, Sigma 24 mm und Sigma 85 mm Art. Erzählerische Szenen von Weitwinkel bis Portrait.', preis_tag: 70, category: 'Pakete', sort_order: 3 },
-  { name: 'Livestream-Set', description: 'Blackmagic ATEM 4K, Behringer XR18, 2x Shure SM7B und LED Panels. Komplettes Mehrkamera-Setup.', preis_tag: 110, category: 'Pakete', sort_order: 4 },
-
   { name: 'Panasonic Lumix S1H', description: 'Professionelle Filmkamera mit 6K-Aufnahme, Dual Native ISO und aktiver Kühlung.', preis_tag: 60, category: 'Kameras', sort_order: 10 },
   { name: 'Panasonic Lumix S5II', description: 'Vielseitige Hybridkamera mit Phasen-Autofokus, 6K Open Gate und interner LUT-Unterstützung.', preis_tag: 40, category: 'Kameras', sort_order: 11 },
   { name: 'Panasonic Lumix S5 / S5D', description: 'Kompakte Vollformatkamera mit 4K-Video und stabilisiertem Sensor.', preis_tag: 30, category: 'Kameras', sort_order: 12 },
